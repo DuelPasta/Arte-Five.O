@@ -1,0 +1,6 @@
+https://stackoverflow.com/questions/16871179/executing-jar-file-with-an-argument-by-mouse-right-click-on-windows
+https://www.howtogeek.com/howto/windows-vista/add-any-application-to-the-desktop-right-click-menu-in-vista/
+http://gcmuganda.faculty.noctrl.edu/classes/Winter11/161/Labs/Lab4_2Website/HtmlPage.htm  // File Chooser and Scanner
+http://www.java2s.com/Tutorials/Java/IO/Scanner/Use_Scanner_to_read_a_list_of_comma_separated_values_in_Java.htm
+http://www.mathopenref.com/coordpolygonarea.html  //Calculate PolyGon Area
+
