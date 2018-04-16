@@ -1,4 +1,6 @@
-import logic.GerberParser;
+import controller.GerberParser;
+import model.Circle;
+import model.Polygons;
 
 import javax.swing.*;
 import java.io.File;
@@ -7,9 +9,19 @@ public class Main {
 
     public static void main(String[] args) {
 
+        //class tests
+Polygons poly = new Polygons();
+
+poly.setPoint(0,0);
+        poly.setPoint(-5,-5);
+        poly.setPoint(-3,2);
+        poly.setPoint(9,4);
+
+        System.out.println(poly.getPolArea());
+
+
         //Start the program
         Initialize();
-
     }
 
     public static void Initialize() {
