@@ -12,11 +12,11 @@ public class Main {
         //class tests
 Polygons poly = new Polygons();
 
-poly.setPoint(0,0);
-        poly.setPoint(-5,-5);
-        poly.setPoint(-3,2);
-        poly.setPoint(9,4);
-
+poly.setPoint(4.10,0.05);
+        poly.setPoint(0.03,0.03);
+        poly.setPoint(-0.07,2.86);
+        poly.setPoint(3.97,2.92);
+        poly.setPoint(2.49,1.4);
         System.out.println(poly.getPolArea());
 
 
