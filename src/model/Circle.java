@@ -7,9 +7,10 @@ public class Circle {
     private int areaRatio;
     private int transferEffeciency;
 
-    public Circle(double radius) {
+    public Circle(int dCode, double radius) {
 
         this.radius = radius;
+        System.out.println("Circle received!!");
 
     }
 
