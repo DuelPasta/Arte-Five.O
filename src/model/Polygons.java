@@ -30,7 +30,6 @@ public class Polygons {
         for (int i = 0; i < size; i++) {
             x[i] = pol.get(i).getX();
             y[i] = pol.get(i).getY();
-            System.out.println(x[i] + " " + y[i]);
         }
 
         return polygonArea(x,y,size);

@@ -45,6 +45,7 @@ public class GerberParser {
                 switch (matcher.group(2)) {
                     case "R":
                         rectangle = new Rectangle(dCode, x, y);
+                        Apertures aperture = new Apertures(rectangle);
                         break;
                     case "C":
                         circle = new Circle(dCode, x);
