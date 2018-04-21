@@ -1,6 +1,4 @@
-import controller.GerberParser;
-import model.Circle;
-import model.Polygons;
+import controller.Aperture;
 
 import javax.swing.*;
 import java.io.File;
@@ -22,7 +20,7 @@ public class Main {
         int result = chooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             file = chooser.getSelectedFile();
-            GerberParser parser = new GerberParser();
+            Aperture parser = new Aperture();
             parser.startParsing(file);
         }  else {
             JOptionPane.showMessageDialog(null, "No file selected");

@@ -1,17 +1,14 @@
 package model;
 
-import javafx.collections.ObservableList;
-import javafx.geometry.Point2D;
-import javafx.scene.shape.Polygon;
 
-import java.awt.*;
+import javafx.geometry.Point2D;
 import java.util.ArrayList;
 
-public class Polygons {
+public class Polygon {
 
     private ArrayList<Point2D> pol;
 
-    public Polygons() {
+    public Polygon() {
         pol = new ArrayList<>();
     }
 
