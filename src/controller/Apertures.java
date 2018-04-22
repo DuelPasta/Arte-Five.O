@@ -1,36 +1,28 @@
 package controller;
 
-
-import model.Rectangle;
-
+import model.Shape;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-
 public class Apertures {
 
-    private ArrayList<Rectangle> rectangles = new ArrayList<>();
+    private ArrayList<Shape> apertures;
 
-    public void setRectangles(ArrayList<Rectangle> rectangles) {
+    Apertures() {
 
-        this.rectangles = rectangles;
+        apertures = new ArrayList<>();
 
+    }
+
+    public void addApertures(ArrayList<Shape> apertures) {
+        this.apertures = apertures;
     }
 
     public void sortList() {
-  Collections.sort(rectangles, new Comparator<Rectangle>() {
-      @Override
-      public int compare(Rectangle o1, Rectangle o2) {
-          return Double.compare(o1.compareAreaRatio(), o2.compareAreaRatio());
-      }
-  });
-
-  for (Rectangle rect : rectangles) {
-      System.out.println(rect.getOutput());
-  }
-
-
+        apertures.sort(Comparator.comparingDouble(Shape::AreaRatio));
+        for (Shape aperture : apertures) {
+            System.out.println(aperture.getOutput());
+        }
     }
-
 }

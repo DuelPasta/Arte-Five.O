@@ -10,13 +10,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Aperture {
-
+    private static final Pattern REGEX_FIND_PADS = Pattern.compile("[%ADD](\\d*)([RCO]),(\\d*[.]\\d*)*X?(\\d[.]\\d*)?");
     private Scanner scan;
-    private static final Pattern REGEX_FIND_APERTURES = Pattern.compile("[%ADD](\\d*)([RCO]),(\\d*[.]\\d*)*X?(\\d[.]\\d*)?");
+
     private Rectangle rectangle;
     private Circle circle;
     private Obround obround;
-    private ArrayList<Rectangle> rectangles = new ArrayList<>();
+    private ArrayList<Shape> aperturesList = new ArrayList<>();
+    private Apertures apertures;
     private ArrayList<Circle> circles;
     private ArrayList<Obround> obrounds;
     private ArrayList<Macro> macros;
@@ -24,6 +25,7 @@ public class Aperture {
     private double thickness;
 
     public void startParsing(File file, double thickness) {
+        apertures = new Apertures();
         this.thickness = thickness;
         try {scan = new Scanner (file);}
         catch (FileNotFoundException e) {e.printStackTrace();}
@@ -33,19 +35,17 @@ public class Aperture {
             parsePads(line);
         }
 
-
         Apertures apertures = new Apertures();
-        apertures.setRectangles(rectangles);
+        apertures.addApertures(aperturesList);
         apertures.sortList();
     }
-
 
     private void parsePads(String line) {
             int dCode;
             double x;
             double y = 0;
 
-            Matcher matcher = REGEX_FIND_APERTURES.matcher(line);
+            Matcher matcher = REGEX_FIND_PADS.matcher(line);
 
             if (matcher.find()) {
                 dCode = Integer.parseInt(matcher.group(1));
@@ -62,7 +62,8 @@ public class Aperture {
                         parseObround(dCode,x,y);
                         break;
                     case "C":
-                        parseCircle(dCode, x);
+                        x /= 2; //Need radius for calculations
+                        parseCircle(dCode, x, y);
                         break;
                 }
             }
@@ -71,6 +72,7 @@ public class Aperture {
     private void parseRect(int dCode, double  x, double y) {
 
         rectangle = new Rectangle();
+        rectangle.setShape("Rectangle");
         rectangle.setdCode(dCode);
         rectangle.setThickness(thickness);
         rectangle.setX(x);
@@ -78,18 +80,12 @@ public class Aperture {
         rectangle.getArea();
         rectangle.getAreaRatio();
         rectangle.getTransferEffeciency();
-        System.out.println(rectangle.getOutput());
-
-        rectangles.add(rectangle);
-
-    }
-
-    public ArrayList<Rectangle> getRectangles() {
-        return rectangles;
+        aperturesList.add(rectangle);
     }
 
     private void parseObround(int dCode, double x, double y) {
         obround = new Obround();
+        obround.setShape("Oblong");
         obround.setdCode(dCode);
         obround.setThickness(thickness);
         obround.setX(x);
@@ -97,15 +93,21 @@ public class Aperture {
         obround.getArea();
         obround.getAreaRatio();
         obround.getTransferEffeciency();
-        System.out.println(obround.getOutput());
-        obrounds = new ArrayList<>();
-        obrounds.add(obround);
+        aperturesList.add(obround);
     }
 
-    private void parseCircle(int dCode, double x) {
-        //circle = new Circle();
-        //circles.add(circle);
-    } //TODO
+    private void parseCircle(int dCode, double x, double y) {
+        circle = new Circle();
+        circle.setShape("Circle");
+        circle.setdCode(dCode);
+        circle.setThickness(thickness);
+        circle.setX(x);
+        circle.setY(y);
+        circle.getArea();
+        circle.getAreaRatio();
+        circle.getTransferEffeciency();
+        aperturesList.add(circle);
+    }
 
     public void parsePolygon() {
 

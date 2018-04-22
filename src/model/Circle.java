@@ -1,22 +1,22 @@
 package model;
 
-public class Circle {
+import static com.sun.org.apache.xalan.internal.lib.ExsltMath.power;
 
-    private double radius;
-    private double area;
-    private int areaRatio;
-    private int transferEffeciency;
+public class Circle extends Shape {
 
-    public Circle(int dCode, double radius) {
-
-        this.radius = radius;
-        System.out.println("Circle received!!");
-
+    @Override
+    public void getArea() {
+        area = Math.PI * power(x,2);
     }
 
-    public double getArea() {
+    @Override
+    public void getAreaRatio() {
+        areaRatio = area / (Math.PI * x * thickness);
+    }
 
-        return Math.PI * (radius * radius);
+    @Override
+    public void getTransferEffeciency() {
+        transferEffeciency = x / thickness;
 
     }
 }
