@@ -11,7 +11,7 @@ public class Circle extends Shape {
 
     @Override
     public void getAreaRatio() {
-        areaRatio = area / (Math.PI * x * thickness);
+        areaRatio = area / (Math.PI * (x*2) * thickness);
     }
 
     @Override

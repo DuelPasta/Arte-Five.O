@@ -11,15 +11,11 @@ public class Main {
     private static double thickness;
 
     public static void main(String[] args) {
-
-        //class tests
-
-
-        //Start the program
         Initialize();
     }
 
-    public static void Initialize() {
+    private static void Initialize() {
+        //TODO Find better alternative for JFilechooser as it's buggy.
         File file = null;
         JFileChooser chooser = new JFileChooser();
         int result = chooser.showOpenDialog(null);
@@ -34,11 +30,10 @@ public class Main {
         }
     }
 
-    public static void getThickness() {
+    private static void getThickness() {
 
         Scanner scan = new Scanner(System.in);
         System.out.println("Please enter thickness:");
         thickness = scan.nextDouble()/1000;
-        System.out.println(thickness);
     }
 }

@@ -72,10 +72,17 @@ public class Shape {
 
     }
 
-    // Setters, self explanatory
-    public void setdCode(int dCode) {this.dCode = dCode;}
-    public void setX(double x) {this.x = x;}
-    public void setY(double y) {this.y = y;}
-    public void setThickness(double thickness) {this.thickness = thickness;}
-    public void setShape(String shape) {this.shape = shape;}
+    // Setters
+    public void setdCode(int dCode)                 {this.dCode = dCode;}
+    public void setX(double x)                      {this.x = x;}
+    public void setY(double y)                      {this.y = y;}
+    public void setThickness(double thickness)      {this.thickness = thickness;}
+    public void setShape(String shape)              {this.shape = shape;}
+
+    // Getters
+    public int getdCode()                           {return dCode;}
+    public double getX()                            {return x;}
+    public double getY()                            {return y;}
+    public double getThickness()                    {return thickness;}
+    public String getShape()                        {return shape;}
 }
