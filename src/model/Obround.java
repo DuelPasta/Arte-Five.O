@@ -2,47 +2,13 @@ package model;
 
 public class Obround extends Rectangle {
 
-    private int dCode;
-    private double area;
-    private double x;
-    private double y;
-    private double areaRatio;
-    private double transferEffeciency;
-    private double thickness;
-
     public Obround() {
-            this.dCode = 0;
-            this.area = 0.0;
-            this.x = 0.0;
-            this.y = 0.0;
-            this.thickness = 0.0;
+        super();
     }
 
+    //Getters
     @Override
-    public String toString() {
-        return "Obround{" +
-                "dCode=" + dCode +
-                ", area=" + area +
-                ", x=" + x +
-                ", y=" + y +
-                ", areaRatio=" + areaRatio +
-                ", transferEffeciency=" + transferEffeciency +
-                ", thickness=" + thickness +
-                '}';
-    }
-
-    @Override
-    public void setdCode(int dCode) {
-        this.dCode = dCode;
-    }
-
-    @Override
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    @Override
-    public void setY(double y) {
-        this.y = y;
+    public String getOutput() {
+        return String.format("DCode: %-7.0f  \"%-9s\" \t - Size: %5.3fmm x %5.3fmm - \t Area: %6.3fmm² \t Area Ratio: %5.2f \t Transfer Effeciency: %2.1f",  (double) dCode, "Oblong",  x, y, area, areaRatio, transferEffeciency);
     }
 }

@@ -1,16 +1,14 @@
 package model;
 
-import controller.Apertures;
-
 public class Rectangle {
 
-    private int dCode;
-    private double area;
-    private double x;
-    private double y;
-    private double areaRatio;
-    private double transferEffeciency;
-    private double thickness;
+    int dCode;
+    double area;
+    double x;
+    double y;
+    double areaRatio;
+    double transferEffeciency;
+    double thickness;
 
     public Rectangle() {
         this.dCode = 0;
@@ -18,46 +16,33 @@ public class Rectangle {
         this.x = 0.0;
         this.y = 0.0;
         this.thickness = 0.0;
+        this.areaRatio = 0.0;
 
     }
-
-    @Override
-    public String toString() {
-        return "Rectangle{" +
-                "dCode=" + dCode +
-                ", area=" + area +
-                ", x=" + x +
-                ", y=" + y +
-                ", areaRatio=" + areaRatio +
-                ", transferEffeciency=" + transferEffeciency +
-                ", thickness=" + thickness +
-                '}';
-    }
-
-    public double calculateArea() {
-        return this.x * this.y;
-    }
-
-
-    /* TODO
-    *     public void calculateAreaRatio() {
-    }
-    *
-    * */
-
-
-
-        /* TODO
-         * Calculate TE based on Area Ratio
-            public double transferEffeciency() {
-                    return x;
-    }
-         */
 
     //Getters
-    private double getArea(double x, double y) {return x * y;}
-    private double getAreaRatio(double thickness, double x, double y) {return areaRatio;}
-    private double getTransferEffeciency(double areaRatio) {return transferEffeciency;}
+    public String getOutput() {
+        return String.format("DCode: %-7.0f  \"%-9s\" \t - Size: %5.3fmm x %5.3fmm - \t Area: %6.3fmm² \t Area Ratio: %5.2f \t Transfer Effeciency: %2.1f",  (double) dCode, "Rectangle",  x, y, area, areaRatio, transferEffeciency);
+    }
+
+    public void getArea() {
+        area = x * y;
+    }
+
+    public void getAreaRatio() {
+        areaRatio = area/(2 * (x + y) * thickness);
+    }
+
+    public double compareAreaRatio() {
+        return this.areaRatio;
+    }
+
+    public void getTransferEffeciency() {
+        double w;
+        w = (x < y ? x : y);
+        transferEffeciency = w / thickness;
+
+    }
 
     //Setters
     public void setdCode(int dCode) {this.dCode = dCode;}
