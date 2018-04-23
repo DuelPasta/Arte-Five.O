@@ -11,11 +11,11 @@ import java.util.regex.Pattern;
 
 public class Aperture {
     private static final Pattern REGEX_FIND_PADS = Pattern.compile("%ADD(\\d*)([RCO]),(\\d*[.]\\d*)*X?(\\d[.]\\d*)?");
-    private static final Pattern REGEX_FIND_POLYGONS = Pattern.compile("X(\\d*)Y(\\d*)");
+    private static final Pattern REGEX_FIND_POLYGONS = Pattern.compile("X?(\\d*)Y?(\\d*)");
     private Polygon polygon;
     private Scanner scan;
     private ArrayList<Shape> aperturesList = new ArrayList<>();
-
+    int counter = 0;
     private double thickness;
 
     public void startParsing(File file, double thickness) {
@@ -38,7 +38,7 @@ public class Aperture {
 
     private void parsePads(String line) {
         Matcher matcherPads = REGEX_FIND_PADS.matcher(line);
-        Matcher matcherPolygons = REGEX_FIND_POLYGONS.matcher(line);
+
         String beginCode = "G36*";
         String endCode = "G37*";
         int dCode = 0;
@@ -68,18 +68,25 @@ public class Aperture {
 
         //Extract all lines between polygon tags and send to polygon model to extract info
         if (line.equals(beginCode)) {
+            counter++;
             polygon = new Polygon();
             line = scan.next();
+            Matcher matcherPolygons = REGEX_FIND_POLYGONS.matcher(line);
+
             while (!line.equals(endCode)) {
+                line = scan.next();
                 if (matcherPolygons.find()) {
-                    dCode = 9999;
-                    x = Double.parseDouble(matcherPolygons.group(1));
-                    y = Double.parseDouble(matcherPolygons.group(2));
+                    dCode = counter;
+                    x = (Double.parseDouble(matcherPolygons.group(1)) /1000);
+                    y = (Double.parseDouble(matcherPolygons.group(2)) /1000);
                     polygon.setPoint(x, y);
-                    line = scan.next();
+
+
                 }
-                parsePolygon(dCode, x, y);
+
             }
+            parsePolygon(dCode, x, y);
+
         }
     }
 
@@ -129,8 +136,6 @@ public class Aperture {
         polygon.getArea();
         aperturesList.add(polygon);
 
-
-        System.out.println(polygon);
     } //TODO
 
 
