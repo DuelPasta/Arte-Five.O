@@ -10,68 +10,81 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Aperture {
-    private static final Pattern REGEX_FIND_PADS = Pattern.compile("[%ADD](\\d*)([RCO]),(\\d*[.]\\d*)*X?(\\d[.]\\d*)?");
+    private static final Pattern REGEX_FIND_PADS = Pattern.compile("%ADD(\\d*)([RCO]),(\\d*[.]\\d*)*X?(\\d[.]\\d*)?");
+    private static final Pattern REGEX_FIND_POLYGONS = Pattern.compile("X(\\d*)Y(\\d*)");
+    private Polygon polygon;
     private Scanner scan;
-
-    private Rectangle rectangle;
-    private Circle circle;
-    private Obround obround;
     private ArrayList<Shape> aperturesList = new ArrayList<>();
-    private Apertures apertures;
-    private ArrayList<Circle> circles;
-    private ArrayList<Obround> obrounds;
-    private ArrayList<Macro> macros;
-    private ArrayList<Polygon> polygons;
+
     private double thickness;
 
     public void startParsing(File file, double thickness) {
-        apertures = new Apertures();
+
+        Apertures apertures = new Apertures();
         this.thickness = thickness;
-        try {scan = new Scanner (file);}
-        catch (FileNotFoundException e) {e.printStackTrace();}
+        try {
+            scan = new Scanner(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         System.out.println("Loaded the following file and start parsing " + file);
         while (scan.hasNext()) {
             String line = scan.next();
             parsePads(line);
         }
-
-        Apertures apertures = new Apertures();
         apertures.addApertures(aperturesList);
         apertures.sortList();
     }
 
     private void parsePads(String line) {
-            int dCode;
-            double x;
-            double y = 0;
+        Matcher matcherPads = REGEX_FIND_PADS.matcher(line);
+        Matcher matcherPolygons = REGEX_FIND_POLYGONS.matcher(line);
+        String beginCode = "G36*";
+        String endCode = "G37*";
+        int dCode = 0;
+        double x = 0;
+        double y = 0;
 
-            Matcher matcher = REGEX_FIND_PADS.matcher(line);
-
-            if (matcher.find()) {
-                dCode = Integer.parseInt(matcher.group(1));
-                x = Double.parseDouble(matcher.group(3));
-                if (matcher.group(4) != null) {
-                    y = Double.parseDouble(matcher.group(4));
-                }
-
-                switch (matcher.group(2)) {
-                    case "R":
-                        parseRect(dCode,x,y);
-                        break;
-                    case "O":
-                        parseObround(dCode,x,y);
-                        break;
-                    case "C":
-                        x /= 2; //Need radius for calculations
-                        parseCircle(dCode, x, y);
-                        break;
-                }
+        if (matcherPads.find()) {
+            dCode = Integer.parseInt(matcherPads.group(1));
+            x = Double.parseDouble(matcherPads.group(3));
+            if (matcherPads.group(4) != null) {
+                y = Double.parseDouble(matcherPads.group(4));
             }
+
+            switch (matcherPads.group(2)) {
+                case "R":
+                    parseRect(dCode, x, y);
+                    break;
+                case "O":
+                    parseObround(dCode, x, y);
+                    break;
+                case "C":
+                    x /= 2; //Need radius for calculations
+                    parseCircle(dCode, x, y);
+                    break;
+            }
+        }
+
+        //Extract all lines between polygon tags and send to polygon model to extract info
+        if (line.equals(beginCode)) {
+            polygon = new Polygon();
+            line = scan.next();
+            while (!line.equals(endCode)) {
+                if (matcherPolygons.find()) {
+                    dCode = 9999;
+                    x = Double.parseDouble(matcherPolygons.group(1));
+                    y = Double.parseDouble(matcherPolygons.group(2));
+                    polygon.setPoint(x, y);
+                    line = scan.next();
+                }
+                parsePolygon(dCode, x, y);
+            }
+        }
     }
 
-    private void parseRect(int dCode, double  x, double y) {
-
-        rectangle = new Rectangle();
+    private void parseRect(int dCode, double x, double y) {
+        Rectangle rectangle = new Rectangle();
         rectangle.setShape("Rectangle");
         rectangle.setdCode(dCode);
         rectangle.setThickness(thickness);
@@ -84,7 +97,7 @@ public class Aperture {
     }
 
     private void parseObround(int dCode, double x, double y) {
-        obround = new Obround();
+        Obround obround = new Obround();
         obround.setShape("Oblong");
         obround.setdCode(dCode);
         obround.setThickness(thickness);
@@ -97,7 +110,7 @@ public class Aperture {
     }
 
     private void parseCircle(int dCode, double x, double y) {
-        circle = new Circle();
+        Circle circle = new Circle();
         circle.setShape("Circle");
         circle.setdCode(dCode);
         circle.setThickness(thickness);
@@ -109,8 +122,15 @@ public class Aperture {
         aperturesList.add(circle);
     }
 
-    public void parsePolygon() {
+    private void parsePolygon(int dCode, double x, double y) {
 
+        polygon.setShape("Custom");
+        polygon.setdCode(dCode);
+        polygon.getArea();
+        aperturesList.add(polygon);
+
+
+        System.out.println(polygon);
     } //TODO
 
 
