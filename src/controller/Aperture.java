@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class Aperture {
     private static final Pattern REGEX_FIND_PADS = Pattern.compile("%ADD(\\d*)([RCO]),(\\d*[.]\\d*)*X?(\\d[.]\\d*)?");
-    private static final Pattern REGEX_FIND_POLYGONS = Pattern.compile("X?(\\d*)Y?(\\d*)");
+    private static final Pattern REGEX_FIND_POLYGONS = Pattern.compile(".*?X*?(\\d*)Y??(\\d*)D\\d*\\*");
     private Polygon polygon;
     private Scanner scan;
     private ArrayList<Shape> aperturesList = new ArrayList<>();
@@ -71,21 +71,17 @@ public class Aperture {
             counter++;
             polygon = new Polygon();
             line = scan.next();
-            Matcher matcherPolygons = REGEX_FIND_POLYGONS.matcher(line);
-
-            while (!line.equals(endCode)) {
-                line = scan.next();
-                if (matcherPolygons.find()) {
+            while (!line.equals(endCode)){
+               Matcher matcherPolygons = REGEX_FIND_POLYGONS.matcher(line);
+                if (matcherPolygons.find() && !line.equals("G74*") && !line.equals("G75*") && !line.equals("G75*") && !line.equals("G01*"))  {
                     dCode = counter;
                     x = (Double.parseDouble(matcherPolygons.group(1)) /1000);
                     y = (Double.parseDouble(matcherPolygons.group(2)) /1000);
                     polygon.setPoint(x, y);
-
-
                 }
-
+                line = scan.next();
+                //parsePolygon(dCode, x, y);
             }
-            parsePolygon(dCode, x, y);
 
         }
     }
