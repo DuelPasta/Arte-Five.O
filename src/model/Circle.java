@@ -5,18 +5,20 @@ import static com.sun.org.apache.xalan.internal.lib.ExsltMath.power;
 public class Circle extends Shape {
 
     @Override
-    public void getArea() {
-        area = Math.PI * power(x,2);
+    public double getArea() {
+        return Math.PI * power(getX(),2);
     }
 
     @Override
-    public void getAreaRatio() {
-        areaRatio = area / (Math.PI * (x*2) * thickness);
+    public double getAreaRatio() {
+
+        return getArea() / (Math.PI * (getX()*2) * getThickness());
+
     }
 
     @Override
-    public void getTransferEffeciency() {
-        transferEffeciency = x / thickness;
+    public double getTransferEffeciency() {
+        return getX() / getThickness();
 
     }
 }

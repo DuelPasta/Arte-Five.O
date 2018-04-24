@@ -21,7 +21,7 @@ public class Polygon extends Shape {
     }
 
     @Override
-    public void getArea() {
+    public double getArea() {
 
         int size = pol.size();
         double[] x = new double[size];
@@ -31,7 +31,7 @@ public class Polygon extends Shape {
             y[i] = pol.get(i).getY();
         }
 
-        area = polygonArea(x, y, size);
+        return polygonArea(x, y, size);
     }
 
     private double polygonArea(double[] x, double[] y, int numPoints) {

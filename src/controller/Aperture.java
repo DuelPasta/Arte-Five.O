@@ -67,23 +67,22 @@ public class Aperture {
         }
 
         //Extract all lines between polygon tags and send to polygon model to extract info
-        if (line.equals(beginCode)) {
-            counter++;
-            polygon = new Polygon();
-            line = scan.next();
-            while (!line.equals(endCode)){
-               Matcher matcherPolygons = REGEX_FIND_POLYGONS.matcher(line);
-                if (matcherPolygons.find() && !line.equals("G74*") && !line.equals("G75*") && !line.equals("G75*") && !line.equals("G01*"))  {
-                    dCode = counter;
-                    x = (Double.parseDouble(matcherPolygons.group(1)) /1000);
-                    y = (Double.parseDouble(matcherPolygons.group(2)) /1000);
-                    polygon.setPoint(x, y);
-                }
-                line = scan.next();
+        //if (line.equals(beginCode)) {
+          //  counter++;
+            //polygon = new Polygon();
+            //line = scan.next();
+            //while (!line.equals(endCode)){
+              // Matcher matcherPolygons = REGEX_FIND_POLYGONS.matcher(line);
+                ////  dCode = counter;
+                   // x = (Double.parseDouble(matcherPolygons.group(1)) /1000);
+                    //y = (Double.parseDouble(matcherPolygons.group(2)) /1000);
+                    //polygon.setPoint(x, y);
+                //}
+                //line = scan.next();
                 //parsePolygon(dCode, x, y);
-            }
+            //}
 
-        }
+        //}
     }
 
     private void parseRect(int dCode, double x, double y) {

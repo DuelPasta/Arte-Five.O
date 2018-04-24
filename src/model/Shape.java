@@ -6,26 +6,12 @@ package model;
 
 public class Shape {
 
-    int dCode;
-    double area;
-    double x;
-    double y;
-    double areaRatio;
-    double transferEffeciency;
-    double thickness;
-    String shape;
-
-    Shape() {
-        this.dCode = 0;
-        this.area = 0.0;
-        this.x = 0.0;
-        this.y = 0.0;
-        this.thickness = 0.0;
-        this.areaRatio = 0.0;
-        this.transferEffeciency = 0.0;
-        this.shape = "";
-
-    }
+    private int dCode;
+    private double area;
+    private double x;
+    private double y;
+    private double thickness;
+    private String shape;
 
     /**
      * This method created a formatted string to write to a report file.
@@ -37,38 +23,32 @@ public class Shape {
                 , shape
                 , x
                 , y
-                , area
-                , areaRatio
-                , transferEffeciency);}
+                , getArea()
+                , getAreaRatio()
+                , getTransferEffeciency());}
 
     /**
      * This method calculates the area of the shape.
      */
-    public void getArea() {
-        area = x * y;
+    public double getArea() {
+        return x * y;
     }
 
     /**
      * This method calculates the Area Ratio of the shape.
      */
-    public void getAreaRatio() {
-        areaRatio = area/(2 * (x + y) * thickness);
-    }
+    public double getAreaRatio() {
 
-    /**
-     * This method is needed to sort the apertures.
-     */
-    public double AreaRatio() {
-        return this.areaRatio;
+        return getArea()/(2 * (getX() + getY()) * getThickness());
     }
 
     /**
      * This method calculates the Transfer Effeciency
      */
-    public void getTransferEffeciency() {
+    public double getTransferEffeciency() {
         double w;
         w = (x < y ? x : y);
-        transferEffeciency = w / thickness;
+        return w / thickness;
 
     }
 

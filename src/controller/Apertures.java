@@ -15,12 +15,12 @@ public class Apertures {
 
     }
 
-    public void addApertures(ArrayList<Shape> apertures) {
+     void addApertures(ArrayList<Shape> apertures) {
         this.apertures = apertures;
     }
 
-    public void sortList() {
-        apertures.sort(Comparator.comparingDouble(Shape::AreaRatio));
+     void sortList() {
+        apertures.sort(Comparator.comparingDouble(Shape::getAreaRatio));
         for (Shape aperture : apertures) {
             System.out.println(aperture.getOutput());
         }
