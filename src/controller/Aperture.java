@@ -15,8 +15,14 @@ public class Aperture {
     private Polygon polygon;
     private Scanner scan;
     private ArrayList<Shape> aperturesList = new ArrayList<>();
-    int counter = 0;
+    private int counter = 0;
     private double thickness;
+    private int dCode = 0;
+    private double x = 0;
+    private double y = 0;
+    private String beginCode = "G36*";
+    private String endCode = "G37*";
+
 
     public void startParsing(File file, double thickness) {
 
@@ -31,16 +37,21 @@ public class Aperture {
         while (scan.hasNext()) {
             String line = scan.next();
             parsePads(line);
+
+            if (line.equals(beginCode)) {
+                line = scan.next();
+                parsePolygons(line);
+            }
         }
+
         apertures.addApertures(aperturesList);
         apertures.sortList();
+
     }
 
     private void parsePads(String line) {
         Matcher matcherPads = REGEX_FIND_PADS.matcher(line);
 
-        String beginCode = "G36*";
-        String endCode = "G37*";
         int dCode = 0;
         double x = 0;
         double y = 0;
@@ -65,25 +76,42 @@ public class Aperture {
                     break;
             }
         }
-
-        //Extract all lines between polygon tags and send to polygon model to extract info
-        //if (line.equals(beginCode)) {
-          //  counter++;
-            //polygon = new Polygon();
-            //line = scan.next();
-            //while (!line.equals(endCode)){
-              // Matcher matcherPolygons = REGEX_FIND_POLYGONS.matcher(line);
-                ////  dCode = counter;
-                   // x = (Double.parseDouble(matcherPolygons.group(1)) /1000);
-                    //y = (Double.parseDouble(matcherPolygons.group(2)) /1000);
-                    //polygon.setPoint(x, y);
-                //}
-                //line = scan.next();
-                //parsePolygon(dCode, x, y);
-            //}
-
-        //}
     }
+
+    private void parsePolygons(String line) {
+
+        String polygonCoordinates = "";
+        counter++;
+        polygon = new Polygon();
+
+        String ignoreCode1 = "G74*";
+        String ignoreCode2 = "G75*";
+        String ignoreCode3 = "G01*";
+
+        while (!line.equals(endCode)) {
+            Matcher matcherPolygons = REGEX_FIND_POLYGONS.matcher(line);
+            if (par)) {
+                line = scan.next();
+            } else if (line.equals(ignoreCode1) || line.equals(ignoreCode2) || line.equals(ignoreCode3)) {
+                line = scan.next();
+            }
+        }
+
+
+        if (line.equals(beginCode)) {
+            while (!line.equals(endCode)) {
+                Matcher matcherPolygons = REGEX_FIND_POLYGONS.matcher(line);
+                dCode = counter;
+                x = (Double.parseDouble(matcherPolygons.group(1)) / 1000);
+                y = (Double.parseDouble(matcherPolygons.group(2)) / 1000);
+                polygon.setPoint(x, y);
+            }
+            line = scan.next();
+            parsePolygon(dCode, x, y);
+        }
+
+    }
+
 
     private void parseRect(int dCode, double x, double y) {
         Rectangle rectangle = new Rectangle();

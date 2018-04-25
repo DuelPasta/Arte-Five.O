@@ -20,21 +20,7 @@ public class Polygon extends Shape {
 
     }
 
-    @Override
-    public double getArea() {
-
-        int size = pol.size();
-        double[] x = new double[size];
-        double[] y = new double[size];
-        for (int i = 0; i < size; i++) {
-            x[i] = pol.get(i).getX();
-            y[i] = pol.get(i).getY();
-        }
-
-        return polygonArea(x, y, size);
-    }
-
-    private double polygonArea(double[] x, double[] y, int numPoints) {
+    public double getArea(double[] x, double[] y, int numPoints) {
         double area = 0;         // Accumulates area in the loop
         int j = numPoints - 1;  // The last vertex is the 'previous' one to the first
 
@@ -45,3 +31,4 @@ public class Polygon extends Shape {
         return area / 2;
     }
 }
+
