@@ -13,6 +13,7 @@ public class Shape {
     private double thickness;
     private String shape;
 
+
     /**
      * This method created a formatted string to write to a report file.
      * @return Returns formatted string with all attributes.

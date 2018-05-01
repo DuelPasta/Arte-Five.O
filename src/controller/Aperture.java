@@ -11,11 +11,11 @@ import java.util.regex.Pattern;
 
 public class Aperture {
     private static final Pattern REGEX_FIND_PADS = Pattern.compile("%ADD(\\d*)([RCO]),(\\d*[.]\\d*)*X?(\\d[.]\\d*)?");
-    private static final Pattern REGEX_FIND_POLYGONS = Pattern.compile(".*?X*?(\\d*)Y??(\\d*)D\\d*\\*");
+    private static final Pattern REGEX_FIND_POLYGONS = Pattern.compile("X(\\d*)Y(\\d*)D\\d*\\*");
     private Polygon polygon;
     private Scanner scan;
     private ArrayList<Shape> aperturesList = new ArrayList<>();
-    private int counter = 0;
+    private int counter;
     private double thickness;
     private int dCode = 0;
     private double x = 0;
@@ -65,14 +65,20 @@ public class Aperture {
 
             switch (matcherPads.group(2)) {
                 case "R":
-                    parseRect(dCode, x, y);
+                    Rectangle rectangle;
+                    rectangle = new Rectangle(dCode, x, y, thickness, "Rectangle");
+                    aperturesList.add(rectangle);
                     break;
                 case "O":
-                    parseObround(dCode, x, y);
+                    Obround obround;
+                    obround = new Obround(dCode, x, y, thickness, "Rectangle");
+                    aperturesList.add(obround);
                     break;
                 case "C":
                     x /= 2; //Need radius for calculations
-                    parseCircle(dCode, x, y);
+                    Circle circle;
+                    circle = new Circle(dCode, x, y, thickness, "Rectangle");
+                    aperturesList.add(circle);
                     break;
             }
         }
@@ -80,86 +86,24 @@ public class Aperture {
 
     private void parsePolygons(String line) {
 
-        String polygonCoordinates = "";
-        counter++;
+        dCode = counter += 1;
         polygon = new Polygon();
-
-        String ignoreCode1 = "G74*";
-        String ignoreCode2 = "G75*";
-        String ignoreCode3 = "G01*";
+        polygon.setThickness(thickness);
 
         while (!line.equals(endCode)) {
+
             Matcher matcherPolygons = REGEX_FIND_POLYGONS.matcher(line);
-            if (par)) {
-                line = scan.next();
-            } else if (line.equals(ignoreCode1) || line.equals(ignoreCode2) || line.equals(ignoreCode3)) {
-                line = scan.next();
-            }
-        }
 
-
-        if (line.equals(beginCode)) {
-            while (!line.equals(endCode)) {
-                Matcher matcherPolygons = REGEX_FIND_POLYGONS.matcher(line);
-                dCode = counter;
+            if (matcherPolygons.find()) {
                 x = (Double.parseDouble(matcherPolygons.group(1)) / 1000);
                 y = (Double.parseDouble(matcherPolygons.group(2)) / 1000);
-                polygon.setPoint(x, y);
+                polygon.addPoint(x, y);
+                line = scan.next();
+            } else {
+                line = scan.next();
             }
-            line = scan.next();
-            parsePolygon(dCode, x, y);
+            polygon.setSize();
+            aperturesList.add(polygon);
         }
-
     }
-
-
-    private void parseRect(int dCode, double x, double y) {
-        Rectangle rectangle = new Rectangle();
-        rectangle.setShape("Rectangle");
-        rectangle.setdCode(dCode);
-        rectangle.setThickness(thickness);
-        rectangle.setX(x);
-        rectangle.setY(y);
-        rectangle.getArea();
-        rectangle.getAreaRatio();
-        rectangle.getTransferEffeciency();
-        aperturesList.add(rectangle);
-    }
-
-    private void parseObround(int dCode, double x, double y) {
-        Obround obround = new Obround();
-        obround.setShape("Oblong");
-        obround.setdCode(dCode);
-        obround.setThickness(thickness);
-        obround.setX(x);
-        obround.setY(y);
-        obround.getArea();
-        obround.getAreaRatio();
-        obround.getTransferEffeciency();
-        aperturesList.add(obround);
-    }
-
-    private void parseCircle(int dCode, double x, double y) {
-        Circle circle = new Circle();
-        circle.setShape("Circle");
-        circle.setdCode(dCode);
-        circle.setThickness(thickness);
-        circle.setX(x);
-        circle.setY(y);
-        circle.getArea();
-        circle.getAreaRatio();
-        circle.getTransferEffeciency();
-        aperturesList.add(circle);
-    }
-
-    private void parsePolygon(int dCode, double x, double y) {
-
-        polygon.setShape("Custom");
-        polygon.setdCode(dCode);
-        polygon.getArea();
-        aperturesList.add(polygon);
-
-    } //TODO
-
-
 }
