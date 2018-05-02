@@ -2,7 +2,6 @@ package controller;
 
 import model.Shape;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 
 public class Apertures {
@@ -19,7 +18,7 @@ public class Apertures {
         this.apertures = apertures;
     }
 
-     void sortList() {
+    void sortList() {
         apertures.sort(Comparator.comparingDouble(Shape::getAreaRatio));
         for (Shape aperture : apertures) {
             System.out.println(aperture.getOutput());

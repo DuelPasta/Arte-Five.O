@@ -12,5 +12,4 @@ public class Rectangle extends Shape {
         super.getAreaRatio();
         super.getTransferEffeciency();
     }
-
 }
