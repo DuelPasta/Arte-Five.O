@@ -15,9 +15,9 @@ public class Aperture {
     private static final Pattern REGEX_FIND_PADS = Pattern.compile("%ADD(\\d*)([RCO]),(\\d*[.]\\d*)*X?(\\d[.]\\d*)?");
     private static final Pattern REGEX_FIND_POLYGONS = Pattern.compile("X(\\d*)Y(\\d*)D\\d*\\*");
     private static final Pattern REGEX_FIND_DCODES = Pattern.compile("[G54D]?(\\d*)\\*");
-    private ArrayList<Shape> aperturesList = new ArrayList<>();
     private static final String beginCode = "G36*";
     private static final String endCode = "G37*";
+    private ArrayList<Shape> aperturesList = new ArrayList<>();
     private Scanner scan;
     private double thickness;
 
@@ -123,13 +123,13 @@ public class Aperture {
         //21 Center Line Exposure(1), Width (0.522), Hight (0.658), Center X, Center Y (kan 0 zijn), Rotation (kan 0 zijn)
         //Voor rounded rectangle ideaal omdat we enkel de afmeting moeten terugvinden.
         //I.E.:
-       //           %AMROUNDED19*
+        //           %AMROUNDED19*
         //         21,1,0.522000,0.658000,0,0,0.0*
-           //         21,1,0.372000,0.808000,0,0,0.0*
-           //         1,1,0.150000,0.186000,0.329000*
-           //         1,1,0.150000,0.186000,-0.329000*
+        //         21,1,0.372000,0.808000,0,0,0.0*
+        //         1,1,0.150000,0.186000,0.329000*
+        //         1,1,0.150000,0.186000,-0.329000*
         //         1,1,0.150000,-0.186000,-0.329000*
-         //         1,1,0.150000,-0.186000,0.329000*%
+        //         1,1,0.150000,-0.186000,0.329000*%
         //  %ADD19ROUNDED19*%
     }
 }
