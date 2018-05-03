@@ -13,6 +13,13 @@ public class Shape {
     private double thickness;
     private String shape;
 
+    Shape(int dCode, double x, double y, double thickness, String shape) {
+        this.dCode = dCode;
+        this.x = x;
+        this.y = y;
+        this.thickness = thickness;
+        this.shape = shape;
+    }
 
     /**
      * This method created a formatted string to write to a report file.
@@ -52,6 +59,7 @@ public class Shape {
         return w / thickness;
 
     }
+
 
     // Setters
     public void setdCode(int dCode)                 {this.dCode = dCode;}
