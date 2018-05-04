@@ -114,8 +114,9 @@ public class Aperture {
         double[] size;
 
         if (line.contains(macroCode)) {
-            line = scan.next();
-            while (!line.contains("%")) {
+
+
+            while (!line.contains("%")){
                 sizeX.add(Double.parseDouble(line.split(",")[2]));
                 sizeY.add(Double.parseDouble(line.split(",")[3]));
                 System.out.println(line);
@@ -130,16 +131,12 @@ public class Aperture {
 
     private void countApertures(String line) {
 
-
-        Matcher countPads = REGEX_FIND_DCODES.matcher(line);
-        if (countPads.find()) {
-
-            for (Shape shape : aperturesList) {
-                if (!shape.getShape().equals("Polygon")) {
-
+        for (Shape shape : aperturesList) {
+            if (!shape.getShape().equals("Polygon")) {
+                Matcher countPads = REGEX_FIND_DCODES.matcher(line);
+                if (countPads.find()) {
                     int dCode = shape.getdCode();
                     int count = 0;
-
                     if (dCode == Integer.parseInt(countPads.group(1))) {
                         line = scan.next();
                         while (line.contains("D03")) {
@@ -148,10 +145,9 @@ public class Aperture {
                         }
                         shape.setNumbOfApertures(count);
                     }
-
-                } else {
-                    shape.setNumbOfApertures(1);
                 }
+            } else {
+                shape.setNumbOfApertures(1);
             }
         }
     }
