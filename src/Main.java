@@ -1,9 +1,7 @@
-import controller.Aperture;
+import controller.Parser;
 
 import javax.swing.*;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.util.Scanner;
 
 public class Main {
@@ -21,7 +19,7 @@ public class Main {
         int result = chooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             file = chooser.getSelectedFile();
-            Aperture parser = new Aperture();
+            Parser parser = new Parser();
             getThickness();
             parser.startParsing(file, thickness);
         }  else {
