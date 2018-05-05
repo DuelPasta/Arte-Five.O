@@ -14,14 +14,14 @@ public class Main {
 
     private static void Initialize() {
         //TODO Find better alternative for JFilechooser as it's buggy.
-        File file = null;
+        File file;
         JFileChooser chooser = new JFileChooser();
         int result = chooser.showOpenDialog(null);
         if (result == JFileChooser.APPROVE_OPTION) {
             file = chooser.getSelectedFile();
-            Parser parser = new Parser();
             getThickness();
-            parser.startParsing(file, thickness);
+            Parser parser = new Parser(file, thickness);
+            parser.parse();
         }  else {
             JOptionPane.showMessageDialog(null, "No file selected");
             System.exit(1);
@@ -29,7 +29,6 @@ public class Main {
     }
 
     private static void getThickness() {
-
         Scanner scan = new Scanner(System.in);
         System.out.println("Please enter thickness:");
         thickness = scan.nextDouble()/1000;

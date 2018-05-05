@@ -2,9 +2,14 @@ package controller;
 
 import model.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.lang.reflect.Array;
+import java.nio.Buffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,22 +26,25 @@ public class Parser {
     private static final String beginCode = "G36*";
     private static final String endCode = "G37*";
     private double thickness;
+    private Path src;
+    private Path dst;
     private Matcher matcher;
     private ArrayList<Shape> aperturesList = new ArrayList<>();
     private ArrayList<Integer> dCodeList = new ArrayList<>();
     private Scanner scan;
-    private String fileLocation;
     private File file;
+    private File tempFile;
 
-
-    public void startParsing(File file, double thickness) {
-
-        this.file = file;
-
-
+    public Parser(File file, double thickness) {
         this.thickness = thickness;
+        this.file = file;
+        cleanUpFile();
+    }
+
+
+    public void parse() {
         try {
-            scan = new Scanner(file);
+            scan = new Scanner(tempFile);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -45,13 +53,12 @@ public class Parser {
         while (scan.hasNext()) {
             String line = scan.next();
             parsePads(line);
-            parseMacro(line);
+            //parseMacro(line);
             parsePolygons(line);
             countApertures(line);
         }
 
         createFiles();
-
 
     }
 
@@ -183,8 +190,40 @@ public class Parser {
 
     private void createFiles() {
         Apertures apertures = new Apertures(aperturesList);
-        fileLocation = file.getParent();
-        apertures.createReport(fileLocation);
+        apertures.createReport(file.getParent());
         apertures.showApertures();
     }
+
+    private void cleanUpFile() {
+        //Run this to clean up the gerber file in order for regex to work on all different software exports.
+        //Run through the file and enter newline after each (*) symbol. % command cleanup not needed.
+
+        this.src = Paths.get(this.file.getAbsolutePath());
+        this.dst = Paths.get(src + "-temp");
+        this.tempFile = new File(dst.toString());
+        BufferedReader reader;
+        BufferedWriter writer;
+        int ch;
+        try {
+            reader = Files.newBufferedReader(src, StandardCharsets.UTF_8);
+            writer = Files.newBufferedWriter(dst, StandardCharsets.UTF_8);
+            while ((ch = reader.read()) != -1) {
+                if (ch != 42) {
+                    writer.write(ch);
+                } else {
+                    writer.write(ch);
+                    writer.newLine();
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Missing file");
+            System.exit(0);
+        } catch (IOException e) {
+            System.out.println("Empty file");
+            System.exit(0);
+        }
+
+
+    }
+
 }
