@@ -18,10 +18,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parser {
-    private static final Pattern REGEX_FIND_PADS = Pattern.compile("%ADD(\\d*)([RCO]),(\\d*[.]\\d*)*X?(\\d[.]\\d*)?");
+    private static final Pattern REGEX_FIND_PADS = Pattern.compile("ADD(\\d*)([RCO]),(\\d*[.]\\d*)*X?(\\d[.]\\d*)?");
     private static final Pattern REGEX_FIND_POLYGONS = Pattern.compile("X(\\d*)Y(\\d*)");
-    private static final Pattern REGEX_FIND_DCODES = Pattern.compile("G54D(\\d*)");
-    private static final Pattern REGEX_FIND_MACRO = Pattern.compile("%AM(.*)\\*");
+    private static final Pattern REGEX_FIND_DCODES = Pattern.compile("(?:G54)D(\\d*)|^(?!ADD)D(\\d*)\\*");
+    private static final Pattern REGEX_FIND_MACRO = Pattern.compile("AM(.*)\\*");
     private static final Pattern REGEX_FIND_MACRO_PARAMS = Pattern.compile("\\d*,\\d*,(\\d*\\.\\d*),(\\d*\\.\\d*),.*\\*");
     private static final String beginCode = "G36*";
     private static final String endCode = "G37*";
@@ -39,6 +39,7 @@ public class Parser {
         this.thickness = thickness;
         this.file = file;
         cleanUpFile();
+
     }
 
 
@@ -53,7 +54,7 @@ public class Parser {
         while (scan.hasNext()) {
             String line = scan.next();
             parsePads(line);
-            //parseMacro(line);
+            parseMacro(line);
             parsePolygons(line);
             countApertures(line);
         }
@@ -153,23 +154,22 @@ public class Parser {
 
     private void countApertures(String line) {
 
+        Matcher matcher = REGEX_FIND_DCODES.matcher(line);
+        int count = 0;
+        int dCodeLine = 0;
+
+        if (matcher.find()) {
+            dCodeLine = Integer.parseInt(matcher.group(2));
+            line = scan.next();
+            while (line.contains("D03*") || line.contains("D3*")) {
+                count++;
+                line = scan.next();
+            }
+        }
         for (Shape shape : aperturesList) {
-            if (!shape.getShape().equals("Polygon")) {
-                Matcher countPads = REGEX_FIND_DCODES.matcher(line);
-                if (countPads.find()) {
-                    int dCode = shape.getdCode();
-                    int count = 0;
-                    if (dCode == Integer.parseInt(countPads.group(1))) {
-                        line = scan.next();
-                        while (line.contains("D03")) {
-                            count++;
-                            line = scan.next();
-                        }
-                        shape.setNumbOfApertures(count);
-                    }
-                }
-            } else {
-                shape.setNumbOfApertures(1);
+            int dCode = shape.getdCode();
+            if (!shape.getShape().equals("Polygon") && (dCode == dCodeLine)) {
+                shape.setNumbOfApertures(count);
             }
         }
     }
@@ -196,7 +196,7 @@ public class Parser {
 
     private void cleanUpFile() {
         //Run this to clean up the gerber file in order for regex to work on all different software exports.
-        //Run through the file and enter newline after each (*) symbol. % command cleanup not needed.
+        //Run through the file and enter newline after each (*) symbol. Removes % blocks.
 
         this.src = Paths.get(this.file.getAbsolutePath());
         this.dst = Paths.get(src + "-temp");
@@ -208,13 +208,21 @@ public class Parser {
             reader = Files.newBufferedReader(src, StandardCharsets.UTF_8);
             writer = Files.newBufferedWriter(dst, StandardCharsets.UTF_8);
             while ((ch = reader.read()) != -1) {
-                if (ch != 42) {
-                    writer.write(ch);
-                } else {
-                    writer.write(ch);
-                    writer.newLine();
+                switch (ch) {
+                    default:
+                        writer.write(ch);
+                        break;
+                    case 42:
+                        writer.write(ch);
+                        writer.newLine();
+                        break;
+                    case 10:
+                        break;
+                    case 37:
+                        break;
                 }
             }
+            writer.close();
         } catch (FileNotFoundException e) {
             System.out.println("Missing file");
             System.exit(0);
@@ -222,8 +230,5 @@ public class Parser {
             System.out.println("Empty file");
             System.exit(0);
         }
-
-
     }
-
 }
