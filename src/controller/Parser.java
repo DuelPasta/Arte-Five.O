@@ -22,7 +22,7 @@ public class Parser {
     private static final Pattern REGEX_FIND_POLYGONS = Pattern.compile("X(\\d*)Y(\\d*)");
     private static final Pattern REGEX_FIND_DCODES = Pattern.compile("(?:G54)D(\\d*)|^(?!ADD)D(\\d*)\\*");
     private static final Pattern REGEX_FIND_MACRO = Pattern.compile("AM(.*)\\*");
-    private static final Pattern REGEX_FIND_MACRO_PARAMS = Pattern.compile("\\d*,\\d*,(\\d*\\.\\d*),(\\d*\\.\\d*),.*\\*");
+    private static final Pattern REGEX_FIND_MACRO_PARAMS = Pattern.compile("\\d*,\\d*,(-?\\d*\\.-?\\d*),(-?\\d*\\.-?\\d*).*");
     private static final String beginCode = "G36*";
     private static final String endCode = "G37*";
     private double thickness;
@@ -30,8 +30,8 @@ public class Parser {
     private Path dst;
     private Matcher matcher;
     private ArrayList<Shape> aperturesList = new ArrayList<>();
-    private ArrayList<Integer> dCodeList = new ArrayList<>();
     private Scanner scan;
+    private Scanner scanCount;
     private File file;
     private File tempFile;
 
@@ -41,7 +41,6 @@ public class Parser {
         cleanUpFile();
 
     }
-
 
     public void parse() {
         try {
@@ -56,13 +55,11 @@ public class Parser {
             parsePads(line);
             parseMacro(line);
             parsePolygons(line);
-            countApertures(line);
+
         }
-
+        countApertures();
         createFiles();
-
     }
-
 
     private void parsePads(String line) {
 
@@ -83,20 +80,17 @@ public class Parser {
                     Rectangle rectangle;
                     rectangle = new Rectangle(dCode, x, y, thickness, "Rectangle");
                     aperturesList.add(rectangle);
-                    dCodeList.add(dCode);
                     break;
                 case "O":
                     Obround obround;
                     obround = new Obround(dCode, x, y, thickness, "Oblong");
                     aperturesList.add(obround);
-                    dCodeList.add(dCode);
                     break;
                 case "C":
                     x /= 2; //Need radius for calculations
                     Circle circle;
                     circle = new Circle(dCode, x, y, thickness, "Circle");
                     aperturesList.add(circle);
-                    dCodeList.add(dCode);
                     break;
             }
         }
@@ -152,24 +146,34 @@ public class Parser {
         }
     }
 
-    private void countApertures(String line) {
+    private void countApertures() {
 
-        Matcher matcher = REGEX_FIND_DCODES.matcher(line);
-        int count = 0;
-        int dCodeLine = 0;
+        int dCodeLine;
+        try {
+            scanCount = new Scanner(tempFile);
 
-        if (matcher.find()) {
-            dCodeLine = Integer.parseInt(matcher.group(2));
-            line = scan.next();
-            while (line.contains("D03*") || line.contains("D3*")) {
-                count++;
-                line = scan.next();
-            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
-        for (Shape shape : aperturesList) {
-            int dCode = shape.getdCode();
-            if (!shape.getShape().equals("Polygon") && (dCode == dCodeLine)) {
-                shape.setNumbOfApertures(count);
+        while (scanCount.hasNext()) {
+            String line = scanCount.next();
+            Matcher matcher = REGEX_FIND_DCODES.matcher(line);
+            while (matcher.find()) {
+                int count = 0;
+                dCodeLine = Integer.parseInt(matcher.group(1));
+                line = scanCount.next();
+                while (line.contains("D03*") || line.contains("D3*")) {
+                    count++;
+                    line = scanCount.next();
+                }
+                matcher = REGEX_FIND_DCODES.matcher(line);
+                for (Shape shape : aperturesList) {
+                    int dCode = shape.getdCode();
+                    if (dCode == dCodeLine) {
+                        shape.setNumbOfApertures(count);
+                        break;
+                    }
+                }
             }
         }
     }
