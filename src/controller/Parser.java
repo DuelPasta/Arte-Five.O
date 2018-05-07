@@ -25,8 +25,9 @@ public class Parser {
     private static final Pattern REGEX_FIND_MACRO_PARAMS = Pattern.compile("\\d*,\\d*,(-?\\d*\\.-?\\d*),(-?\\d*\\.-?\\d*).*");
     private static final String beginCode = "G36*";
     private static final String endCode = "G37*";
+    private final String fileLocation;
     private double thickness;
-    private GerberSettings settings;
+    private GerberSettings settings = new GerberSettings();
     private Path src;
     private Path dst;
     private Matcher matcher;
@@ -39,6 +40,7 @@ public class Parser {
     public Parser(File file, double thickness) {
         this.thickness = thickness;
         this.file = file;
+        this.fileLocation = file.getParent();
         cleanUpFile();
 
     }
@@ -108,8 +110,8 @@ public class Parser {
             while (!line.contains(endCode)) {
                 Matcher matcher = REGEX_FIND_POLYGONS.matcher(line);
                 if (matcher.find()) {
-                    pointsX.add((Double.parseDouble(matcher.group(1)) / 1000));
-                    pointsY.add((Double.parseDouble(matcher.group(2)) / 1000));
+                    pointsX.add((Double.parseDouble(matcher.group(1)) / settings.getPrecisionX()));
+                    pointsY.add((Double.parseDouble(matcher.group(2)) / settings.getPrecisionY()));
                     line = scan.next();
                 } else {
                     line = scan.next();
@@ -124,6 +126,7 @@ public class Parser {
 
     private void parseMacro(String line) {
 
+        //TODO: match dcode with name of the macro
         ArrayList<Double> sizeX = new ArrayList<>();
         ArrayList<Double> sizeY = new ArrayList<>();
         double[] size;
@@ -137,8 +140,6 @@ public class Parser {
                 sizeX.add(Double.parseDouble(line.split(",")[2]));
                 sizeY.add(Double.parseDouble(line.split(",")[3]));
                 System.out.println(line);
-                line = scan.next();
-                matcher = REGEX_FIND_MACRO_PARAMS.matcher(line);
             }
             size = highestSize(sizeX, sizeY);
             Macro macro = new Macro(0000, size[0], size[1], thickness, "Custom");
@@ -161,7 +162,14 @@ public class Parser {
             Matcher matcher = REGEX_FIND_DCODES.matcher(line);
             while (matcher.find()) {
                 int count = 0;
-                dCodeLine = Integer.parseInt(matcher.group(1));
+
+                //Hack for REGEX failed grouping
+                if (matcher.group(1) != null) {
+                    dCodeLine = Integer.parseInt(matcher.group(1));
+                } else {
+                    dCodeLine = Integer.parseInt(matcher.group(2));
+                }
+
                 line = scanCount.next();
                 while (line.contains("D03*") || line.contains("D3*")) {
                     count++;
@@ -194,9 +202,8 @@ public class Parser {
     }
 
     private void createFiles() {
-        Apertures apertures = new Apertures(aperturesList);
-        apertures.createReport(file.getParent());
-        apertures.showApertures();
+        Report report = new Report(aperturesList);
+        report.createReport(fileLocation);
     }
 
     private void cleanUpFile() {
@@ -238,11 +245,20 @@ public class Parser {
     }
 
     private void getSettings(String line) {
-        if (line.contains("MOMM*")) {
-    settings.setUnit("MM");
-    else if (line.contains("MOIN*")) {
-        settings.setUnit("INCH");
-            }
 
+        if (line.contains("MOMM*")) {
+            settings.setUnit("MM");
+        } else if (line.contains("MOIN*")) {
+            settings.setUnit("INCH");
+        }
+
+        Pattern pattern = Pattern.compile("FSLAX\\d(\\d)Y\\d(\\d)\\*");
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.find()) {
+            settings.setPrecisionX(Integer.parseInt(matcher.group(1)));
+            settings.setPrecisionY(Integer.parseInt(matcher.group(2)));
+        }
     }
 }
+
+
