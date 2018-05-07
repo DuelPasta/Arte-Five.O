@@ -26,6 +26,7 @@ public class Parser {
     private static final String beginCode = "G36*";
     private static final String endCode = "G37*";
     private double thickness;
+    private GerberSettings settings;
     private Path src;
     private Path dst;
     private Matcher matcher;
@@ -52,6 +53,7 @@ public class Parser {
         System.out.println("Loaded the following file " + file + " and start parsing ");
         while (scan.hasNext()) {
             String line = scan.next();
+            getSettings(line);
             parsePads(line);
             parseMacro(line);
             parsePolygons(line);
@@ -142,7 +144,6 @@ public class Parser {
             Macro macro = new Macro(0000, size[0], size[1], thickness, "Custom");
             aperturesList.add(macro);
             matcher = REGEX_FIND_MACRO.matcher(line);
-            //TODO: dCodeList.add(dCode);
         }
     }
 
@@ -234,5 +235,14 @@ public class Parser {
             System.out.println("Empty file");
             System.exit(0);
         }
+    }
+
+    private void getSettings(String line) {
+        if (line.contains("MOMM*")) {
+    settings.setUnit("MM");
+    else if (line.contains("MOIN*")) {
+        settings.setUnit("INCH");
+            }
+
     }
 }

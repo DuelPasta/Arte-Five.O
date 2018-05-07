@@ -16,7 +16,6 @@ public class Report {
         report = new ArrayList<>();
         this.apertures = apertures;
         checkAreaRatio();
-        createReport();
     }
 
     private void checkAreaRatio() {
@@ -43,6 +42,12 @@ public class Report {
             Files.write(file, report, Charset.forName("UTF-8"));
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void add(ArrayList<String> addToReport) {
+        for (String lines : addToReport) {
+            report.add(lines);
         }
     }
 }
