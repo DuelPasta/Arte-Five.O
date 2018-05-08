@@ -15,9 +15,25 @@ public class Report {
         report = new ArrayList<>();
         this.apertures = apertures;
         checkApertures();
+        getTotalApertures();
         checkAreaRatio();
         checkBGA();
         checkUltraFinePitch();
+    }
+
+    private void getTotalApertures() {
+        int polygonCount = Polygon.getCounter();
+        int totalApertures = 0;
+        for (Shape aperture : apertures) {
+            if (!aperture.getShape().equals("Polygon")) {
+                totalApertures += aperture.getNumbOfApertures();
+            }
+        }
+        totalApertures += polygonCount;
+        report.add(String.format("Total of %5d polygons found: ", polygonCount));
+        report.add(String.format("Total of %5d apertures found: ", totalApertures));
+        report.add("\n\n");
+
     }
 
     private void checkApertures() {
@@ -36,7 +52,7 @@ public class Report {
             if (shape.getAreaRatio() <= 0.6)
                 report.add(String.format(">--- WARNING!!! Aperture with Dcode: %5d is %2.2f. Should be at least 0.6 ---<", shape.getdCode(), shape.getAreaRatio()));
         }
-        report.add("\n\n\n\n\n");
+        report.add("\n \n \n \n \n");
     }
 
     private void checkBGA() {

@@ -29,7 +29,7 @@ public class Shape {
      * @return Returns formatted string with all attributes.
      */
     public String getOutput() {
-        return String.format("DCode: %-7.0f  \"%-9s\" \t - Size: %5.3fmm x %5.3fmm - \t Area: %6.3fmm² \t Area Ratio: %5.2f \t Transfer Effeciency: %2.1f \t Number of apertures: %-5.0f"
+        return String.format("DCode: %-7.0f  \"%-9s\" \t - %5.3fmm x %5.3fmm - \t Area: %6.3fmm² \t Area Ratio: %5.2f \t Transfer Effeciency: %2.1f \t Number of apertures: %-5.0f"
                 , (double) dCode
                 , shape
                 , x
@@ -67,26 +67,6 @@ public class Shape {
 
 
     // Setters
-    public void setdCode(int dCode) {
-        this.dCode = dCode;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public void setThickness(double thickness) {
-        this.thickness = thickness;
-    }
-
-    public void setShape(String shape) {
-        this.shape = shape;
-    }
-
     public void setNumbOfApertures(int numbOfApertures) {
         this.numbOfApertures = numbOfApertures;
     }
@@ -110,5 +90,8 @@ public class Shape {
 
     public String getShape() {
         return shape;
+    }
+    public int getNumbOfApertures() {
+        return numbOfApertures;
     }
 }
