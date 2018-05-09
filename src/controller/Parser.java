@@ -10,10 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +28,7 @@ public class Parser {
     private Path src;
     private Path dst;
     private Matcher matcher;
+    private ArrayList<Shape> polygonGrouper = new ArrayList<>();;
     private ArrayList<Shape> aperturesList = new ArrayList<>();
     private Scanner scan;
     private Scanner scanCount;
@@ -59,11 +57,12 @@ public class Parser {
             parsePads(line);
             parseMacro(line);
             parsePolygons(line);
-
         }
+        groupPolygons();
         countApertures();
         createFiles();
     }
+
 
     private void parsePads(String line) {
 
@@ -102,6 +101,7 @@ public class Parser {
     }
 
     private void parsePolygons(String line) {
+
         ArrayList<Double> pointsX = new ArrayList<>();
         ArrayList<Double> pointsY = new ArrayList<>();
         double[] size;
@@ -120,7 +120,7 @@ public class Parser {
             size = findSize(pointsX, pointsY);
             Polygon polygon;
             polygon = new Polygon(9999, size[0], size[1], thickness, "Polygon");
-            aperturesList.add(polygon);
+            polygonGrouper.add(polygon);
         }
     }
 
@@ -258,6 +258,41 @@ public class Parser {
             settings.setPrecisionX(Integer.parseInt(matcher.group(1)));
             settings.setPrecisionY(Integer.parseInt(matcher.group(2)));
         }
+    }
+
+    private void groupPolygons() {
+        final double PREC = 0.005;
+        double lowXRange;
+        double lowYRange;
+        double highXRange;
+        double highYRange;
+        int tempCount = 0;
+        int count = 0;
+        int temp = 0;
+        polygonGrouper.sort(Comparator.comparingDouble(Shape::getX).thenComparing(Shape::getY));
+        double curXValue = polygonGrouper.get(0).getX();
+        double curYValue = polygonGrouper.get(0).getY();
+        for (int i = 0; i<polygonGrouper.size(); i++) {
+            int j = i; // Need to set curPolygon to the next in the list for comparing without affecting the i variable
+            lowXRange = (Math.round(polygonGrouper.get(i).getX() * 100.0) / 100.0) - PREC;
+            lowYRange = (Math.round(polygonGrouper.get(i).getY() * 100.0) / 100.0) - PREC;
+            highXRange = (Math.round(polygonGrouper.get(i).getX() * 100.0) / 100.0) + PREC;
+            highYRange = (Math.round(polygonGrouper.get(i).getY() * 100.0) / 100.0) + PREC;
+            if ((curXValue >= lowXRange && curXValue <= highXRange) && (curYValue >= lowYRange && curYValue <= highYRange)) {
+                count++;
+            } else {
+                polygonGrouper.get(i).setNumbOfApertures(count);
+                aperturesList.add(polygonGrouper.get(i));
+                curXValue = polygonGrouper.get(++j).getX();
+                curYValue = polygonGrouper.get(j).getY();
+
+                temp++;
+                System.out.println(temp + " polygon shape added" + "   " + count);
+                System.out.println(tempCount += count);
+                count = 0;
+            }
+        }
+
     }
 }
 
