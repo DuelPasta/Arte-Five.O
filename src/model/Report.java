@@ -9,17 +9,18 @@ import java.util.Comparator;
 public class Report {
 
     private ArrayList<String> report;
-    private ArrayList<Shape> apertures;
+    private ArrayList<String> CSV;
 
-    public Report(ArrayList<Shape> apertures) {
+    private ArrayList<Shape> apertures;
+    private String fileLocation;
+
+    public Report(ArrayList<Shape> apertures, String filelocation) {
         report = new ArrayList<>();
+        CSV = new ArrayList<>();
         this.apertures = apertures;
-        checkApertures();
-        getTotalApertures();
-        checkAreaRatio();
-        checkBGA();
-        checkUltraFinePitch();
+        this.fileLocation = filelocation;
     }
+
 
     private void getTotalApertures() {
         int polygonCount = Polygon.getCounter();
@@ -33,7 +34,6 @@ public class Report {
         report.add(String.format("Total of %5d polygons found: ", polygonCount));
         report.add(String.format("Total of %5d apertures found: ", totalApertures));
         report.add("\n\n");
-
     }
 
     private void checkApertures() {
@@ -42,6 +42,7 @@ public class Report {
             System.out.println(aperture.getOutput());
             if (!aperture.getShape().equals("Polygon")) {
                 report.add(aperture.getOutput());
+                CSV.add(aperture.getdCode());
             }
         }
         report.add("\n\n\n\n\n");
@@ -73,7 +74,7 @@ public class Report {
         }
     }
 
-    public void createReport(String fileLocation) {
+    public void createReport() {
         System.out.println(fileLocation);
         Path file = Paths.get(fileLocation + "\\Report.txt");
         try {
@@ -83,9 +84,23 @@ public class Report {
         }
     }
 
-    public void add(ArrayList<String> addToReport) {
-        report.addAll(addToReport);
+    public void create() {
+        checkApertures();
+        getTotalApertures();
+        checkAreaRatio();
+        checkBGA();
+        checkUltraFinePitch();
+        createReport(); // will probably be changed with the .CSV
+        createCSV();
     }
 
-
+    private void createCSV() {
+        System.out.println(fileLocation);
+        Path file = Paths.get(fileLocation + "\\Report.txt");
+        try {
+            Files.write(file, report, Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

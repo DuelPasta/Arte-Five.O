@@ -28,7 +28,6 @@ public class Parser {
     private Path src;
     private Path dst;
     private Matcher matcher;
-    private ArrayList<Shape> polygonGrouper = new ArrayList<>();
     int count = 0;
 
     private ArrayList<Shape> aperturesList = new ArrayList<>();
@@ -61,7 +60,6 @@ public class Parser {
             parseMacro(line);
             parsePolygons(line);
         }
-        groupPolygons();
         countApertures();
         createFiles();
     }
@@ -126,8 +124,7 @@ public class Parser {
 
             Polygon polygon;
             polygon = new Polygon(9999, size[0], size[1], thickness, "Polygon");
-            polygonGrouper.add(polygon);
-            //aperturesList.add(polygon);
+            aperturesList.add(polygon);
         }
     }
 
@@ -209,8 +206,8 @@ public class Parser {
     }
 
     private void createFiles() {
-        Report report = new Report(aperturesList);
-        report.createReport(fileLocation);
+        Report report = new Report(aperturesList, fileLocation);
+        report.create();
     }
 
     private void cleanUpFile() {
@@ -264,33 +261,6 @@ public class Parser {
         if (matcher.find()) {
             settings.setPrecisionX(Integer.parseInt(matcher.group(1)));
             settings.setPrecisionY(Integer.parseInt(matcher.group(2)));
-        }
-    }
-
-    private void groupPolygons() {
-
-        final double PREC = 0.004;
-
-        polygonGrouper.sort(Comparator.comparingDouble(Shape::getX).thenComparing(Shape::getY));
-
-        double curXValue = polygonGrouper.get(0).getX();
-        double curYValue = polygonGrouper.get(0).getY();
-        for (int i = 1; i < polygons.size(); i++) {
-
-            double checkXValue = polygonGrouper.get(i).getX();
-            double checkYValue = polygonGrouper.get(i).getY();
-
-            if ((curXValue >= (checkXValue - PREC) && curXValue <= (checkXValue + PREC)) && (curYValue >= (checkYValue - PREC) && curYValue <= (checkYValue + PREC))) {
-                i++;
-                count += 1;
-                System.out.println("Polygon: " + count + "discarded");
-            } else {
-                curXValue = polygonGrouper.get(i+1).getX();
-                curYValue = polygonGrouper.get(i+1).getY();
-                count += 1;
-                System.out.println("Polygon: " + count + "added");
-
-            }
         }
     }
 }
