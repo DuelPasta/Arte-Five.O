@@ -64,7 +64,6 @@ public class Parser {
         createFiles();
     }
 
-
     private void parsePads(String line) {
 
         Matcher matcher = REGEX_FIND_PADS.matcher(line);
